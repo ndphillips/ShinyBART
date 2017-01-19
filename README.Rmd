@@ -1,0 +1,39 @@
+---
+title: "Shiny BART"
+author: "Nathaniel Phillips"
+date: "18 January 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Task Description
+
+This app runs the Balloon Analogue Risk Task (BART)
+
+# Using the Application
+
+*Coming soon* 
+
+## Uploading data to Dropbox
+
+In order to upload data to Dropbox, you must include a file called `droptoken.rds` containing your dropbox authentication token. This file must be in the same folder as the main application file `ShinyBanditMulti_app.R`. You can create this file by running the following:
+
+```{r eval = FALSE}
+install.packages("rdrop2")                 # install rdrop2 packagre
+droptoken <- rdrop2::drop_auth()           # Will open a browser and ask you to login
+saveRDS(droptoken, file = "droptoken.rds") # Save token as droptoken.rds
+```
+
+You can specify the folder to save your data in with the `outputDir` object (This object will later on be passed to the `rdrop2::drop_upload()` function when it is time to actually save the data). For example, `outputDir <- "ShinyApp/data"` will save the data to a data folder contained in a ShinyApp folder. 
+
+## Emailing data
+
+
+
+## Notes
+
+
