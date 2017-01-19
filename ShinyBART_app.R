@@ -15,7 +15,7 @@ library(rdrop2)
 # --------------------------
 
 # You must have this file saved in your working directory
-EPtoken <- readRDS("EP_droptoken.rds")          # Reads in authentication for EP dropbox
+EPtoken <- readRDS("droptoken.rds")          # Reads in authentication for EP dropbox
 outputDir <- "nphillips/BART_A/data"            # Determine dropbox output folder
 
 # --------------------------
