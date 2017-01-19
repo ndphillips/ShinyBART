@@ -3,5 +3,6 @@
 *.RData
 *.Ruserdata
 *.rsconnect
+/.Rproj.user
 /rsconnect
 droptoken.rds
