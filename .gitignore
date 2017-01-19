@@ -7,3 +7,6 @@
 /rsconnect
 droptoken.rds
 .Rproj.user
+.RData
+.Rhistory
+.gitignore
