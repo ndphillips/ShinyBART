@@ -3,4 +3,5 @@
 *.RData
 *.Ruserdata
 *.rsconnect
+/rsconnect
 droptoken.rds
