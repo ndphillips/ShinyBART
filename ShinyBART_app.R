@@ -1,34 +1,62 @@
 # ------------------------------
-#  BART TASK
+#  ShinyBART
 #  Originally developed by Lejuez et al. (2002). Evaluation of a behavioral measure of Risk taking...
 #  Implimented in Shiny by Nathaniel Phillips, http://ndphillips.github.io, Nathaniel.D.Phillips.is@gmail.com
-# ------------------------------
+#
+#   CODE SECTIONS
+#
+#   0: Load libraries
+#   A: Setup Game
+#     A1: Game parameters
+#     A2: Data saving
+#   B: Overall layout
+#   C: Reactive values
+#   D: Page layouts
+#   E: Game display
+#     E1: Example game displays (for instructions)
+#   F: Event (button) actions
+#     F1: Page navigation buttons
+#     F2: Event tracking
+#   G: Save data
+# ------------------
 
 # --------------------------
-# Load Libraries
+# Section 0: Load libraries
 # --------------------------
 library(shiny)
 library(rdrop2)
+library(dplyr)
+library(yarrr)
+
 
 # --------------------------
-# Dropbox Parameters
+# Section A: Setup game
 # --------------------------
 
-# You must have this file saved in your working directory
-EPtoken <- readRDS("droptoken.rds")          # Reads in authentication for EP dropbox
-outputDir <- "nphillips/BART_A/data"            # Determine dropbox output folder
+# Section A1: GAME PARAMETERS
 
-# --------------------------
-# Game Parameters
-# --------------------------
 pop.max <- 50
 pop.min <- 1
-balloons.n <- 10
+balloons.n <- 15
 pop.v <- sample(pop.min:pop.max, size = balloons.n, replace = TRUE)
 
-# --------------------------
-# User Interface
-# --------------------------
+# Section A2: DATA SAVING
+
+saveDataLocation <- "dropbox"           # Either dropbox, email, or local
+outputDir <- "nphillips/BART_A/data"  # Directory to save data
+
+# Dropbox
+if(saveDataLocation == "dropbox") {
+  
+  droptoken <- readRDS("droptoken.rds")        # Reads in authentication for dropbox
+  
+}
+
+
+
+# --------------------------------
+# Section B: Define overall layout
+# -------------------------------
 
 ui <- fixedPage(
   
@@ -38,16 +66,14 @@ ui <- fixedPage(
   
 )
 
-# --------------------------
-# Server
-# --------------------------
+
 server <- function(input, output, session) {
   
 
-# --------
-# Set up reactive values
-# These are objects that will change over the course of the game
-# ---------
+# --------------------------------
+# Section C: Define Reactive Values
+#   These store the main values in the game
+# --------------------------------
   
 # CurrentValues stores scalers representing the latest game outcomes
 CurrentValues <- reactiveValues(page = "welcome",
@@ -64,9 +90,9 @@ GameData <- reactiveValues(balloon = c(),
                            action = c(),
                            pop = c())
   
-# --------
-# PageLayouts
-# ---------
+# --------------------------------
+# Section D: Page Layouts
+# --------------------------------
 
 # Send dynamic UI to ui - DON'T CHANGE!
 output$MainAction <- renderUI( {
@@ -80,12 +106,11 @@ PageLayouts <- reactive({
       
       return(
         list(
-          h1("Study Description"),
-          p("This study will take place in two phases and should take between 5 and 10 minutes to complete."),
+          h1("ShinyBART"),
+          p("This is a version of the Balloon Analogue Risk Task (BART) implimented in Shiny. The task was developed by Lejeuz et al. (2002) as a behavioral measure of risk taking."),
+          p("This experiment has two phases:"),
           p("In Phase 1, you will play a game called 'The Balloon Game' and try to earn points while making risky decisions."),
-          p("In Phase 2, you will complete a few short questionnnaires about the game and how you make decisions in general."),
-          p("There are no health risks or personal identifying information associated with your participation."),
-          p("This study is founded by the chair of the department of Economic Psychology at the University of Basel."),
+          p("In Phase 2, you will complete a short questionnnaire about the game and how you make decisions in general."),
           p("Your responses will be anonymous and in a group and your individual responses will not be published."),
           p("If you consent to participating in this study, please enter a unique ID that no one else would use and click Continue."),
           textInput(inputId = "workerid", 
@@ -113,13 +138,15 @@ PageLayouts <- reactive({
         p("To earn points, you need to SAVE a balloon before it pops! You can save a balloon at any time by clicking the 'Save' button. If you save a balloon, you will earn points equal to the number of pumps you put into it. You will then move on to the next balloon"),
         p("However -- if you pump a balloon too much it might pop! If a balloon pops, you cannot save it and will not earn any points for that balloon. You will then move on to the next balloon."),
         p(paste("You will have the opportunity to pump", balloons.n, "balloons. Different balloons have different popping points and you never know exactly when each balloon will pop. However, you know for sure that the maximum possible number of pumps for a balloon is 100.")),
-        h2("Examples"),
+        h3("Examples"),
         p("For example, someone might pump a balloon 10 times. The balloon does not pop, and the player decides to 'Save'. Because the person Saved the balloon before it popped the person would earn 10 points for that balloon."),
         plotOutput(outputId = "ss10np"),
         p("However, someone else might pump the balloon 40 times, and then see that it pops on the 40th pump. Because the balloon popped, the person would not earn any points for this balloon"),
         plotOutput(outputId = "ss40p"),
         p("As you can see, the more you pump a balloon the more risk you take. On the one hand, you might earn more points if the balloon does not pop. On the other hand, if the balloon does pop, you won't be ablew to save it and will not earn any points for that balloon."),
-        h2(paste("There will be", balloons.n, "balloons")),
+        h3(paste("Maximum of", pop.max, "pumps")),
+        p(paste0("The maximum number of pumps for any balloon is ", pop.max, ". If you try to pump a balloon ", pop.max, " times, then it will surely pop!")),
+        h3(paste("There will be", balloons.n, "balloons")),
         p(paste("You will play a total of", balloons.n, "balloons in this game. Again, different balloons have different popping points. You can never know for sure what the popping point for a balloon is unless it pops.")),
         p(paste("You can never lose points that you've earned after saving a balloon. Your goal is to earn as many points as you can across all", balloons.n, "balloons")),
         p("When you are ready to start, click Continue to start the first balloon!"),
@@ -260,12 +287,13 @@ PageLayouts <- reactive({
       
       return(list(
         h3("Thank you for your participation!"),
-        p("Here is your study completion code. Please write it down as a confirmation of your participation"),
-        h2(completion.code),
-        h3("What was this research about?"),
-        p("The purpose of this research is to try and understand how people learn and make decisions about risky options. The game you played is known as the Balloon Analogue Risk Task (BART). It is designed to measure how much risk people are willing to take when making decisions."),
-        p("If you have any questions about this study, you may contact us at EconPsychBasel@gmail.com. If you do contact us, please include your study completion code."),
-        p("You may close this window :)"),
+        p("Here is your randomly generated study completion code. Please write it down as a confirmation of your participation"),
+        h3(completion.code),
+        h3("What was this study about?"),
+        p("The purpose of this study is measure how much risk people are willing to take when making decisions. In this game, the more pumps you take, the more risk you are willing to take. In the plot below, you can see the outcomes of your game"),
+        plotOutput(outputId = "EarningsPlot"),
+        h3("ShinyPsych"),
+        p("This task was written as part of ShinyPsych, a collection of psychology experiments programmed in Shiny. To learn more about ShinyPsych, go to https://ndphillips.github.io/ShinyPsych.html which contains links to the source code."),
         tags$img(src = "thankyou.jpg", width = "300px")
       ))
     }
@@ -273,9 +301,9 @@ PageLayouts <- reactive({
   })
   
 
-# -------------------
-# Bart game display
-# -------------------
+# --------------------------------
+# Section E: Game Display
+# --------------------------------
 
 bart.display <- function(balloon, 
                          pumps, 
@@ -361,6 +389,7 @@ bart.display <- function(balloon,
   
 }
 
+# Section E1: Example game displays
 
 output$ss0np <- renderPlot({
   
@@ -406,10 +435,18 @@ output$ss40p <- renderPlot({
   
 })
 
-# -------------------
-# Define buttons 
-# -------------------
+# --------------------------------
+# Section F: Event (e.g.; button) actions
+# --------------------------------
   
+# Section F1: Page Navigation Buttons
+observeEvent(input$gt_inst1, {CurrentValues$page <- "inst1"})
+observeEvent(input$gt_game, {CurrentValues$page <- "game"})
+observeEvent(input$gt_surveyA, {CurrentValues$page <- "surveyA"})
+observeEvent(input$gt_goodbye, {CurrentValues$page <- "goodbye"})
+  
+# Section F2: Event tracking buttons
+
 # Starting game display
 observeEvent({input$gt_game}, {
   
@@ -423,6 +460,27 @@ observeEvent({input$gt_game}, {
                  pop = FALSE)
     
   })
+})
+
+# After a pop, start next balloon
+observeEvent({input$nextballoon}, {
+  
+  CurrentValues$pumps <- 0
+  CurrentValues$pop <- 0
+  CurrentValues$balloon <- CurrentValues$balloon + 1
+  CurrentValues$saveballoon <- 0
+  
+})
+
+# Look for final balloon -> Go to gameend
+observeEvent({CurrentValues$balloon}, {
+  
+  if(CurrentValues$balloon > balloons.n) {
+    
+    CurrentValues$page <- "gameend"
+    
+  }
+  
 })
 
 # Pump button
@@ -508,37 +566,12 @@ observeEvent(input$saveballoon, {
   # Add points for current balloon to point total
   CurrentValues$points.cum <- CurrentValues$points.cum + CurrentValues$pumps
   CurrentValues$saveballoon <- 1
-
-})
-
-# After a pop, start next balloon
-observeEvent({input$nextballoon}, {
-    
-    CurrentValues$pumps <- 0
-    CurrentValues$pop <- 0
-    CurrentValues$balloon <- CurrentValues$balloon + 1
-    CurrentValues$saveballoon <- 0
-    
-  })
-
-# Look for final balloon -> Go to gameend
-observeEvent({CurrentValues$balloon}, {
-  
-  if(CurrentValues$balloon > balloons.n) {
-    
-    CurrentValues$page <- "gameend"
-    
-  }
   
 })
-  
-# Page navigation buttons
-observeEvent(input$gt_inst1, {CurrentValues$page <- "inst1"})
-observeEvent(input$gt_game, {CurrentValues$page <- "game"})
-observeEvent(input$gt_surveyA, {CurrentValues$page <- "surveyA"})
-observeEvent(input$gt_goodbye, {CurrentValues$page <- "goodbye"})
-  
-# Saving data
+
+# --------------------------------
+# Section G: Save data
+# --------------------------------
 observeEvent(input$gt_goodbye, {
   
   # Create progress message   
@@ -561,7 +594,7 @@ observeEvent(input$gt_goodbye, {
                  write.csv(GameData.i, GameDatafilePath, row.names = FALSE, quote = TRUE)
                  rdrop2::drop_upload(GameDatafilePath, 
                                      dest = outputDir, 
-                                     dtoken = EPtoken)
+                                     dtoken = droptoken)
                  
                  # # Write survey data 
                  # SurveyDatafileName <- paste0(input$workerid, as.integer(Sys.time()), digest::digest(SurveyData.i), "_s.csv")
@@ -571,18 +604,46 @@ observeEvent(input$gt_goodbye, {
                  # 
                  incProgress(.40)
                  
-                 # Some interesting plots (not necessary)
-                 
-                 output$GameData.tbl <- renderTable(GameData.i)         
-                 output$earnings <- renderPlot({
-                   
-                   plot(x = GameData.i$trial, 
-                        y = cumsum(GameData.i$outcome), 
-                        type = "b", 
-                        xlab = "Trial", 
-                        ylab = "Points")
-                   
-                 }) 
+    # Some interesting plots (not necessary)
+  
+     output$EarningsPlot <- renderPlot({
+       
+       balloon.agg <- GameData.i %>% group_by(balloon) %>%
+         summarise(
+           pop = max(pop),
+           pumps = sum(action == 1)
+         )
+       
+       # balloon.agg <- data.frame(balloon = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+       #                           pop = c(1, 1, 0, 0, 0, 0, 0, 1, 1, 0),
+       #                           pumps = runif(10, 1, 50))
+       
+       my.cols <- yarrr::piratepal("xmen", trans = .3, length.out = balloons.n)
+       
+       plot(1, xlim = c(1, balloons.n), ylim = c(0, pop.max), 
+            xlab = "Balloon", ylab = "Pumps", main = "Your Balloons", 
+            yaxt = "n",
+            type = "n", xaxt = "n")
+       
+       grid()
+       
+       axis(1, at = 1:balloons.n)
+       axis(2, at = seq(0, pop.max, 5), las = 1, lwd = 0)
+
+       
+       # Add strings
+       segments(x0 = balloon.agg$balloon[balloon.agg$pop == 0] + runif(balloons.n[balloon.agg$pop == 0], -.09, .09), 
+                y0 = balloon.agg$pumps[balloon.agg$pop == 0] - 8, 
+                x1 = balloon.agg$balloon[balloon.agg$pop == 0], 
+                y1 = balloon.agg$pumps[balloon.agg$pop == 0] - 2,
+                lwd = 1)
+       
+       with(subset(balloon.agg, pop == 1), points(x = balloon, y = pumps, col = "black", pch = 8, cex = sqrt(pumps)))
+
+       with(subset(balloon.agg, pop == 0), points(x = balloon, y = pumps, bg = my.cols, col = "white", pch = 21, cex = sqrt(pumps), lwd = 2))
+       with(subset(balloon.agg, pop == 0), text(x = balloon, y = pumps + 2, "Saved!", pos = 3))
+       
+     }) 
                  
                  CurrentValues$page <- "goodbye"
                  Sys.sleep(.25)
