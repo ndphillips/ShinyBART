@@ -14,7 +14,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 This app runs the Balloon Analogue Risk Task (BART), a measure developed by @lejuez2002evaluation as a behavioral measure of risk taking.
 
-You can play the game here [https://econpsychbasel.shinyapps.io/ShinyBART/](https://econpsychbasel.shinyapps.io/ShinyBART/)
+## Examples
+
+Here are some examples of ShinyBART you can play right now!
+
+| Name| Link| Code | 
+|:----------------------|:---------------|:--------------|
+| 15 Balloons| [https://econpsychbasel.shinyapps.io/ShinyBART/](https://econpsychbasel.shinyapps.io/ShinyBART/)| [GitHub Source Code](https://github.com/ndphillips/ShinyBandit/blob/master/ShinyBandit_app.R)|
+
 
 # Using the Application
 
