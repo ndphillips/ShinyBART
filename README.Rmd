@@ -12,11 +12,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Task Description
 
-This app runs the Balloon Analogue Risk Task (BART)
+This app runs the Balloon Analogue Risk Task (BART), a measure developed by @lejuez2002evaluation as a behavioral measure of risk taking
 
 # Using the Application
 
-*Coming soon* 
+The game is stored in the `ShinyBART_app.R` file. The app is separated into several sections:
+
+| Section|  Description
+|:-----------------|:------------------------------------- | 
+| 0: Load Libraries| Load all libraries necessary to run the application. Be sure to include `shiny` for all Shiny functions, `rdrop2` for Dropbox integration, and `sendmailR` for sending data as emails.|
+| A: Setup the game| Define game parameters (A1), define how data will be saved (A2)|
+| B: Overall Layout | Define the app title and add custom CSS tags.|
+| C: Reactive Values |Define the reactive values which store user inputs throughout the game. `CurrentValues` stores up-to-date (scaler) values of critical game parameters, while `GameValues` stores historical (vector) data|
+|D: Page Layouts | The content and layout of distinct pages (e.g.; welcome page, instructions page, game page) |
+| E: Game Display | The main game display and example game displays (E1) |
+| F: Event (button) actions | Define the result of buttons such as page navigation (F1) and event tracking such as pumps (F2)|
+| G: Save data | Define how data is saved and exported|
 
 ## Uploading data to Dropbox
 
