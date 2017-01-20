@@ -60,7 +60,7 @@ if(saveDataLocation == "dropbox") {
 
 ui <- fixedPage(
   
-  title = "The Balloon Game",
+  title = "ShinyBART",
   uiOutput("MainAction"),
   tags$style(type = "text/css", ".recalculating {opacity: 1.0;}")   # Prevents gray screen during Sys.sleep()
   
@@ -362,13 +362,13 @@ bart.display <- function(balloon,
            bg = pop.col, 
            col = "black")
     
-    mtext(text = "POP!", 
-         cex = 5, side = 3, font = 3)
+    text(.5, .9, labels = paste("POPPED at pump", pumps), 
+         cex = 2, font = 3)
+
     
-    # segments(.65, .40, .85, .4)
-    # segments(.65, .5, .85, .5)
+     text(.7, .5, labels = paste("No Points"), cex = 2, font = 3)
     
-    text(.8, .6, labels = paste("OUTCOME\nThe balloon popped at pump", pumps, "\nYou earned 0 points for this balloon"), cex = 1.5, font = 3)
+
     
   }
   
@@ -381,8 +381,10 @@ bart.display <- function(balloon,
            bg = saveballoon.col, 
            col = "black")
     
+    text(.5, .9, labels = paste("Saved at pump", pumps), 
+          cex = 2, font = 3)
     
-    text(.8, .6, labels = paste("OUTCOME\nYou saved after", pumps, "pumps\nYou earned", pumps, "points for this balloon"), cex = 1.5, font = 3)
+    text(.7, .5, labels = paste("+", pumps, "Points"), cex = 2, font = 3)
     
     
   }
@@ -615,7 +617,7 @@ observeEvent(input$gt_goodbye, {
          )
        
        # balloon.agg <- data.frame(balloon = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-       #                           pop = c(1, 1, 0, 0, 0, 0, 0, 1, 1, 0),
+       #                           pop = sample(c(0, 1), size = 10, replace = TRUE),
        #                           pumps = runif(10, 1, 50))
        
        my.cols <- yarrr::piratepal("xmen", trans = .3, length.out = balloons.n)
