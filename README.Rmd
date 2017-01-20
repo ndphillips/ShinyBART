@@ -5,14 +5,16 @@ date: "18 January 2017"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
 ## Task Description
 
-This app runs the Balloon Analogue Risk Task (BART), a measure developed by @lejuez2002evaluation as a behavioral measure of risk taking
+This app runs the Balloon Analogue Risk Task (BART), a measure developed by @lejuez2002evaluation as a behavioral measure of risk taking.
+
+You can play the game here [https://econpsychbasel.shinyapps.io/ShinyBART/](https://econpsychbasel.shinyapps.io/ShinyBART/)
 
 # Using the Application
 
