@@ -35,9 +35,9 @@ library(yarrr)
 
 # Section A1: GAME PARAMETERS
 
-pop.max <- 50
+pop.max <- 20
 pop.min <- 1
-balloons.n <- 15
+balloons.n <- 10
 pop.v <- sample(pop.min:pop.max, size = balloons.n, replace = TRUE)
 
 # Section A2: DATA SAVING
@@ -141,8 +141,8 @@ PageLayouts <- reactive({
         h3("Examples"),
         p("For example, someone might pump a balloon 10 times. The balloon does not pop, and the player decides to 'Save'. Because the person Saved the balloon before it popped the person would earn 10 points for that balloon."),
         plotOutput(outputId = "ss10np"),
-        p("However, someone else might pump the balloon 40 times, and then see that it pops on the 40th pump. Because the balloon popped, the person would not earn any points for this balloon"),
-        plotOutput(outputId = "ss40p"),
+        p("However, someone else might pump the balloon 18 times, and then see that it pops on the 18th pump. Because the balloon popped, the person would not earn any points for this balloon"),
+        plotOutput(outputId = "ss18p"),
         p("As you can see, the more you pump a balloon the more risk you take. On the one hand, you might earn more points if the balloon does not pop. On the other hand, if the balloon does pop, you won't be ablew to save it and will not earn any points for that balloon."),
         h3(paste("Maximum of", pop.max, "pumps")),
         p(paste0("The maximum number of pumps for any balloon is ", pop.max, ". If you try to pump a balloon ", pop.max, " times, then it will surely pop!")),
@@ -238,7 +238,7 @@ PageLayouts <- reactive({
         radioButtons("sex",
                      label = "What is your sex?",
                      choices = list("Male" = 1, "Female" = 2, "Other" = 3),
-                     selected = 1),
+                     selected = 99),
         
         numericInput("age", 
                      label = "What is your age?",
@@ -251,7 +251,7 @@ PageLayouts <- reactive({
                                  "3" = 3,
                                  "4" = 4,
                                  "5 - Very Much" = 5
-                     )),
+                     ), selected = 99),
         
         textAreaInput(inputId = "strategy",
                       label = "What was your strategy in the Balloon Game?",
@@ -262,13 +262,13 @@ PageLayouts <- reactive({
                      choices = c("No, I have not played it." =  1,
                                  "Yes, I have played it." = 2,
                                  "I don't know" = 3
-                     )),
+                     ), selected = 99),
         
         radioButtons("dontuse",
                      label = "Is there any reason why we should NOT use your data for scientific research? For example, were you not paying attention or were you intoxicated?",
                      choices = c("No. My data should be valid for scientific research" =  "0",
                                  "Yes. There is a good reason why you should NOT use my data for scientific research" = 1
-                     )),
+                     ), selected = 99),
         
         textAreaInput("comments",
                       label = "If you have any additional comments, please enter them below",
@@ -338,7 +338,7 @@ bart.display <- function(balloon,
   if(show.max) {
     
     points(x = .5, y = .5, 
-           cex = (max.pumps + 1) / 2.5, 
+           cex = (max.pumps + 1), 
            pch = 1, col = gray(.3))
   }
   
@@ -346,7 +346,7 @@ bart.display <- function(balloon,
   
   points(x = .5, 
          y = .5, 
-         cex = (pumps + 1) / 2.5, 
+         cex = (pumps + 1), 
          pch = 21, 
          bg = balloon.col, 
          col = "black")
@@ -357,7 +357,7 @@ bart.display <- function(balloon,
     
     points(x = .5, 
            y = .5, 
-           cex = (pumps + 1) / 2.5, 
+           cex = (pumps + 1), 
            pch = 21, 
            bg = pop.col, 
            col = "black")
@@ -376,7 +376,7 @@ bart.display <- function(balloon,
     
     points(x = .5, 
            y = .5, 
-           cex = (pumps + 1) / 2.5, 
+           cex = (pumps + 1), 
            pch = 21, 
            bg = saveballoon.col, 
            col = "black")
@@ -423,13 +423,13 @@ output$ss10np <- renderPlot({
   
 })
 
-output$ss40p <- renderPlot({
+output$ss18p <- renderPlot({
   
   bart.display(balloon = 5,
                balloons.n = balloons.n,
                points.cum = 0,
                max.pumps = pop.max,
-               pumps = 40,
+               pumps = 18,
                pop = TRUE)
   
  # text(.40, .9, labels = "This person popped the\nBalloon at 40 Pumps", cex = 1.5)
@@ -635,14 +635,13 @@ observeEvent(input$gt_goodbye, {
        
        # Add strings
        segments(x0 = balloon.agg$balloon[balloon.agg$pop == 0] + runif(balloons.n[balloon.agg$pop == 0], -.09, .09), 
-                y0 = balloon.agg$pumps[balloon.agg$pop == 0] - 8, 
+                y0 = balloon.agg$pumps[balloon.agg$pop == 0] - 3, 
                 x1 = balloon.agg$balloon[balloon.agg$pop == 0], 
-                y1 = balloon.agg$pumps[balloon.agg$pop == 0] - 2,
+                y1 = balloon.agg$pumps[balloon.agg$pop == 0] - 1,
                 lwd = 1)
        
-       with(subset(balloon.agg, pop == 1), points(x = balloon, y = pumps, col = "black", pch = 8, cex = sqrt(pumps)))
-
-       with(subset(balloon.agg, pop == 0), points(x = balloon, y = pumps, bg = my.cols, col = "white", pch = 21, cex = sqrt(pumps), lwd = 2))
+       with(subset(balloon.agg, pop == 1), points(x = balloon, y = pumps, col = "black", pch = 8, cex = pumps / 2))
+       with(subset(balloon.agg, pop == 0), points(x = balloon, y = pumps, bg = my.cols, col = "white", pch = 21, cex = pumps / 2, lwd = 2))
        with(subset(balloon.agg, pop == 0), text(x = balloon, y = pumps + 2, "Saved!", pos = 3))
        
      }) 
