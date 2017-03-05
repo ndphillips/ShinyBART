@@ -658,3 +658,4 @@ observeEvent(input$gt_goodbye, {
 
 # Create app!
 shinyApp(ui = ui, server = server)
+
