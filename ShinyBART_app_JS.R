@@ -2,6 +2,7 @@
     #  ShinyBART
     #  Originally developed by Lejuez et al. (2002). Evaluation of a behavioral measure of Risk taking...
     #  Implimented in Shiny by Nathaniel Phillips, http://ndphillips.github.io, Nathaniel.D.Phillips.is@gmail.com
+    #  JavaScript added by Kevin Trutmann, k.trutmann@unibas.ch
     #
     #   CODE SECTIONS
     #
