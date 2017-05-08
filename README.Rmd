@@ -12,30 +12,39 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Task Description
 
-This app runs the Balloon Analogue Risk Task (BART), a measure developed by @lejuez2002evaluation as a behavioral measure of risk taking.
+This app runs the Balloon Analogue Risk Task (BART), a measure developed by @lejuez2002evaluation as a behavioral measure of risk taking. It has been extended to include a competitive version in which regular feedback is given.
+
+## Versions
+There are three versions available:
+The first, `ShinyBART_app.R`, is an implementation in pure shiny. Since every pump must be handled by the server, it can lead to some lag. It might be better suited for experiments in a lab.
+The second version, `ShinyBART_app_JS_single.R`, differs from the first in that the display is realised with JavaScript. The server is only called after a balloon is saved or popped, avoiding lag during the pumping part of the game.
+Finaly, the last version is `ShinyBART_app_JS_comp.R`, which is a two-player version of the BART. After each block both players receive feedback about their and their opponents performance. It can either be used in "direct" mode, where each player needs the ID of an opponent who is online to connect, or a "lobby" version in which a player will be kept waiting untill any second player logs in.
 
 ## Examples
 
-Here are some examples of ShinyBART you can play right now!
+Here are some examples of ShinyBART you can play right now! (You will need a competitor, or a second browser window for the competitive version.)
 
 | Name| Link| Code | 
 |:----------------------|:---------------|:--------------|
-| 15 Balloons| [https://econpsychbasel.shinyapps.io/ShinyBART/](https://econpsychbasel.shinyapps.io/ShinyBART/)| [GitHub Source Code](https://github.com/ndphillips/ShinyBandit/blob/master/ShinyBandit_app.R)|
+| Basic ShinyBART| [https://econpsychbasel.shinyapps.io/ShinyBART/](https://econpsychbasel.shinyapps.io/ShinyBART/)| [GitHub Source Code](https://github.com/ndphillips/ShinyBandit/blob/master/ShinyBandit_app.R)|
+| 1-Player ShinyBART| [https://econpsychbasel.shinyapps.io/single_shinybart/](https://econpsychbasel.shinyapps.io/single_shinybart/)| [GitHub Source Code](https://github.com/ndphillips/ShinyBART/blob/master/ShinyBART_app_JS_single.R)|
+| Multyplayer ShinyBART| [ https://econpsychbasel.shinyapps.io/competitive_shinybart/]( https://econpsychbasel.shinyapps.io/competitive_shinybart/)| [GitHub Source Code](https://github.com/ndphillips/ShinyBART/blob/master/ShinyBART_app_JS_comp.R)|
+
 
 
 # Using the Application
 
-The game is stored in the `ShinyBART_app.R` file. The app is separated into several sections:
+The game is stored in the `ShinyBART_app[...].R` file. For the JavaScript versions you will also need to include the `BalloonGame.js` file in the same directory. Every version of the app is separated into several sections:
 
 | Section|  Description
 |:-----------------|:------------------------------------- | 
 | 0: Load Libraries| Load all libraries necessary to run the application. Be sure to include `shiny` for all Shiny functions, `rdrop2` for Dropbox integration, and `sendmailR` for sending data as emails.|
 | A: Setup the game| Define game parameters (A1), define how data will be saved (A2)|
-| B: Overall Layout | Define the app title and add custom CSS tags.|
+| B: Overall Layout | Define the app title and add custom CSS tags. The JS versions also call the .js file here.|
 | C: Reactive Values |Define the reactive values which store user inputs throughout the game. `CurrentValues` stores up-to-date (scaler) values of critical game parameters, while `GameValues` stores historical (vector) data|
 |D: Page Layouts | The content and layout of distinct pages (e.g.; welcome page, instructions page, game page) |
-| E: Game Display | The main game display and example game displays (E1) |
-| F: Event (button) actions | Define the result of buttons such as page navigation (F1) and event tracking such as pumps (F2)|
+| E: Game Display / Plotting Function| The main game display and example game displays (E1). Not needed in the JS versions. |
+| F: Event (button) actions | Define the result of buttons such as page navigation (F1) and event tracking such as saving a balloon (F2)|
 | G: Save data | Define how data is saved and exported|
 
 ## Uploading data to Dropbox
@@ -51,7 +60,7 @@ saveRDS(droptoken, file = "droptoken.rds") # Save token as droptoken.rds
 You can specify the folder to save your data in with the `outputDir` object (This object will later on be passed to the `rdrop2::drop_upload()` function when it is time to actually save the data). For example, `outputDir <- "ShinyApp/data"` will save the data to a data folder contained in a ShinyApp folder. 
 
 ## Emailing data
-
+Receiving the data via Email is not yet implemented.
 
 
 ## Notes
