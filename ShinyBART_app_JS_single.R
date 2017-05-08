@@ -12,7 +12,8 @@
       #   B: Overall layout
       #   C: Reactive values
       #   D: Page layouts
-      #   E: Event (button) actions
+      #   E: Game Display / Plot Function
+      #   F: Event (button) actions
       #     F1: Page navigation buttons
       #     F2: Event tracking
       #   F: Save data
@@ -418,23 +419,34 @@
           
         })
         
+        # --------------------------------
+        # Section F: Game Display / Plot Function ----
+        # --------------------------------
+        
         
         # The function that renders the plot during the feedback
         feedbackPlot <- function() {
+          
             fixedRow(column(6,{
               renderPlot({
-                # Plotting the lines:
+                # Plot during the training:
                 if(CurrentValues$training){
+                  # Plotting the dot:
                   plot(CurrentValues$points.cum,
                        xlim = c(1, 1), pch = 16, col = "red",
                        xlab = "Block", ylab = "Points", xaxt = "n")
+                  # Adding a custom x-axis:
                   axis(1, at = 1, labels = "Training")
+                  
+                  # Plot during the game:
                 } else {
+                  # Adding the lines:
                   plot(GameData$point.hist,
                        xlim = c(1, blocks.n), type = 'l', col = "red", lwd = 2,
                        xlab = "Block", ylab = "Points", xaxt = "n")
-                  # Adding dots
+                  # Adding the dots:
                   points(GameData$point.hist, col = "red", pch = 16)
+                  # Adding a custom x-axis:
                   axis(1, at = 1:blocks.n, labels = c(1:(blocks.n-1), "Final"))
                 }
               })
@@ -442,7 +454,7 @@
         } 
       
         # --------------------------------
-        # Section E: Event (e.g.; button) actions ----
+        # Section F: Event (e.g.; button) actions ----
         # --------------------------------
         
         # Section F1: Simple Page Navigation Buttons

@@ -1,7 +1,8 @@
       # ------------------------------
       #  ShinyBART
       #  Originally developed by Lejuez et al. (2002). Evaluation of a behavioral measure of Risk taking...
-      #  Implimented in Shiny by Nathaniel Phillips, http://ndphillips.github.io, Nathaniel.D.Phillips.is@gmail.com
+      #  Implimented in Shiny by Nathaniel Phillips, http://ndphillips.github.io, Nathaniel.D.Phillips.is@gmail.com,
+      #  with help from Kevin Trutmann
       #
       #   CODE SECTIONS
       #
@@ -12,10 +13,11 @@
       #   B: Overall layout
       #   C: Reactive values
       #   D: Page layouts
-      #   E: Event (button) actions
+      #   E: Game Display / Plotting Function
+      #   F: Event (button) actions
       #     F1: Page navigation buttons
       #     F2: Event tracking
-      #   F: Save data
+      #   G: Save data
       # ------------------
       
       # --------------------------
@@ -35,8 +37,8 @@
       game.type = "lobby" # either "direct" if the opponents are chosen by ID, or "lobby" if the opponent should be found automatically.
       pop.max <- 20
       pop.min <- 1
-      balloonsPerBlock <- 2
-      blocks.n <- 4
+      balloonsPerBlock <- 5
+      blocks.n <- 3
       balloons.n <- balloonsPerBlock*blocks.n
       pop.v <- sample(pop.min:pop.max, size = balloons.n, replace = TRUE)
       RDrawBoundary <- TRUE # Wether to show the maximum size of the ballons
@@ -102,12 +104,12 @@
         # Create a local, reactive version of the global player database and update it regularly       
         playerDB.local <- reactivePoll(2000, session, function(){playerDB}, function(){playerDB})
         
+        # Send the maximum pumpvalue to the Javascript part, so it knows how big to draw the balloon:
+        session$sendCustomMessage(type='maxPopHandler', c(pop.max, RDrawBoundary))
+        
         # --------------------------------
         # Section D: Page Layouts ----
         # --------------------------------
-        
-        # Send the maximum pumpvalue to the Javascript part, so it knows how big to draw the balloon:
-        session$sendCustomMessage(type='maxPopHandler', c(pop.max, RDrawBoundary))      
         
         # Send dynamic UI to ui - DON'T CHANGE!
         output$MainAction <- renderUI( {
@@ -531,7 +533,12 @@
           
         })
         
+
+        # --------------------------------
+        # Section E: Game Display / Plotting Function ----
+        # --------------------------------
         
+                
         # The function that renders the plot during the feedback
         feedbackPlot <- function() {
             # Figure out how high the plot should be:
@@ -539,35 +546,41 @@
             
             fixedRow(column(6,{
               renderPlot({
-                # Plotting the lines:
+                # Plot during the training:
                 if(CurrentValues$training){
+                  # Plotting the lines:
                   plot(playerDB$earned.hist[playerDB$ID == input$workerid][[1]],
                        xlim = c(1, 1), ylim = plotLim, pch = 16, col = "red",
                        xlab = "Block", ylab = "Points", xaxt = "n")
-                  points(playerDB$earned.hist[playerDB$ID == CurrentValues$opponentid][[1]],
-                         col = "blue", pch = 16)
+                  
+                  # Plotting the points on top of the lines:
+                  points(playerDB$earned.hist[playerDB$ID == CurrentValues$opponentid][[1]], col = "blue", pch = 16)
+                  # Adding a custom x-axis:
                   axis(1, at = 1, labels = "Training")
+                  
+                  # Plot during the game:
                 } else {
+                  # Plotting the lines:
                   plot(playerDB$earned.hist[playerDB$ID == input$workerid][[1]],
                        xlim = c(1, blocks.n), ylim = plotLim, type = 'l', col = "red", lwd = 2,
                        xlab = "Block", ylab = "Points", xaxt = "n")
-                  points(playerDB$earned.hist[playerDB$ID == CurrentValues$opponentid][[1]],
-                         type = 'l', col = "blue")
-                  # Adding dots
-                  points(playerDB$earned.hist[playerDB$ID == input$workerid][[1]],
-                         col = "red", pch = 16)
-                  points(playerDB$earned.hist[playerDB$ID == CurrentValues$opponentid][[1]],
-                         col = "blue", pch = 16)
+                
+                  points(playerDB$earned.hist[playerDB$ID == CurrentValues$opponentid][[1]], type = 'l', col = "blue")
+                  # Plotting the points on top of the lines:
+                  points(playerDB$earned.hist[playerDB$ID == input$workerid][[1]], col = "red", pch = 16)
+                  points(playerDB$earned.hist[playerDB$ID == CurrentValues$opponentid][[1]], col = "blue", pch = 16)
+                  # Adding a custom x-axis:
                   axis(1, at = 1:blocks.n, labels = c(1:(blocks.n-1), "Final"))
                 }
                 
+                # Add a legend:
                 legend("bottomright", legend = c("You", "Opponent"), col = c("red", "blue"), lty = 1)
               })
             }))
         } 
       
         # --------------------------------
-        # Section E: Event (e.g.; button) actions ----
+        # Section F: Event (e.g.; button) actions ----
         # --------------------------------
         
         # Section F1: Simple Page Navigation Buttons
@@ -752,7 +765,7 @@
               
     
         # --------------------------------
-        # Section F: Save data ----
+        # Section G: Save data ----
         # --------------------------------
           observeEvent(input$gt_goodbye, {
             
