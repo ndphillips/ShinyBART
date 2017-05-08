@@ -17,7 +17,9 @@ This app runs the Balloon Analogue Risk Task (BART), a measure developed by @lej
 ## Versions
 There are three versions available:
 The first, `ShinyBART_app.R`, is an implementation in pure shiny. Since every pump must be handled by the server, it can lead to some lag. It might be better suited for experiments in a lab.
+
 The second version, `ShinyBART_app_JS_single.R`, differs from the first in that the display is realised with JavaScript. The server is only called after a balloon is saved or popped, avoiding lag during the pumping part of the game.
+
 Finaly, the last version is `ShinyBART_app_JS_comp.R`, which is a two-player version of the BART. After each block both players receive feedback about their and their opponents performance. It can either be used in "direct" mode, where each player needs the ID of an opponent who is online to connect, or a "lobby" version in which a player will be kept waiting untill any second player logs in.
 
 ## Examples
